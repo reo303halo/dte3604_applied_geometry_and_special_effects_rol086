@@ -12,7 +12,8 @@ add_executable( ${PROJECT_NAME}
     rol086/bspline_implement_point_one.h
     rol086/lissajouscurve_implement_point_three.h
     rol086/closed_subdivision_curve_implement_point_two.h
-    rol086/blending_spline_curve_implement_point_four.h )
+    rol086/blending_spline_curve_implement_point_four.h
+    rol086/blending_spline_surface_implement_point_six.h )
 
 
 

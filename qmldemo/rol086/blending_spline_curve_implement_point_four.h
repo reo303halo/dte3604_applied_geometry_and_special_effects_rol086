@@ -5,6 +5,7 @@
 #include "../../gmlib/modules/parametrics/gmpcurve.h"
 #include "parametrics/curves/gmpsubcurve.h"
 
+
 namespace GMlib {
 
 
@@ -29,7 +30,7 @@ public:
 
     // Implement point 5: Use affine transformations of local curves to make a dynamic visual special effect.
     void            rotateControlCurveAlongCenter(int i, float angle);
-    void            translateControlCurve(int i, Vector<T, 3> direction, bool in);
+    void            translateControlCurve(int i, Vector<T, 3> direction);
 
 protected:
     void                eval(T t, int d, bool l) const override;
@@ -239,15 +240,10 @@ void BlendSplineCurve<T>::rotateControlCurveAlongCenter(int i, float angle) {
 
 
 
-
 template <typename T>
-void BlendSplineCurve<T>::translateControlCurve(int i, Vector<T, 3> direction, bool in) {
+void BlendSplineCurve<T>::translateControlCurve(int i, Vector<T, 3> direction) {
     double velocity = 0.05;
-
-    if (in)
-        _c[i]->translateGlobal(direction * velocity);
-    else
-        _c[i]->translateGlobal(direction * -velocity);
+    _c[i]->translateGlobal(direction * -velocity);
 }
 
 
@@ -255,32 +251,32 @@ void BlendSplineCurve<T>::translateControlCurve(int i, Vector<T, 3> direction, b
 template <typename T>
 void BlendSplineCurve<T>::localSimulate(double dt) {
     if (_animate) {
-        static bool in = false;
-
         double speed = 0.2;
 
-        double min_dist = 100;
-        double minimum_distance = 1;
-        double max_dist = -100;
-        double maximum_distance = 5;
+        double min_dist = std::numeric_limits<double>::max();
+        double max_dist = std::numeric_limits<double>::lowest();
+
+        double minimum_distance = 1.0;
+        double maximum_distance = 5.0;
 
         for (int i = 1; i < _c.getDim(); i++) {
             auto* n = _c[i];
             Vector<T, 3> vec_to_center = this->getPos() - n->getPos();
 
-            min_dist = vec_to_center.getLength() < min_dist ? vec_to_center.getLength() : min_dist;
-            max_dist = vec_to_center.getLength() > max_dist ? vec_to_center.getLength() : max_dist;
+            double dist = vec_to_center.getLength();
+            min_dist = std::min(min_dist, dist);
+            max_dist = std::max(max_dist, dist);
 
             vec_to_center = vec_to_center.normalize();
 
-            rotateControlCurveAlongCenter(i, M_2PI * dt * speed);
-            translateControlCurve(i, vec_to_center, in);
-        }
+            // Calculate movement factor for smooth transition
+            double movement_factor = (dist - minimum_distance) / (maximum_distance - minimum_distance);
+            movement_factor = clamp(movement_factor, 0.0, 1.0);
 
-        if(min_dist <= minimum_distance && in)
-            in = false;
-        else if(max_dist >= maximum_distance && !in)
-            in = true;
+            // Rotate & Translate smoothly
+            rotateControlCurveAlongCenter(i, M_2PI * dt * speed);
+            translateControlCurve(i, vec_to_center * movement_factor * dt * speed);
+        }
 
         this->resample();
         this->setEditDone();
@@ -288,6 +284,12 @@ void BlendSplineCurve<T>::localSimulate(double dt) {
 }
 
 
+
+// Ensures that a value stays within a specified range. It prevents values from going below a minimum or above a maximum.
+template <typename T>
+constexpr const T& clamp(const T& value, const T& min, const T& max) {
+    return (value < min) ? min : (value > max) ? max : value;
+}
 } // END namepace GMlib
 
 #endif // BLENDING_SPLINE_CURVE_IMPLEMENT_POINT_FOUR_H

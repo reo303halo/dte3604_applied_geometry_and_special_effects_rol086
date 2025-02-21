@@ -111,6 +111,7 @@ void Scenario::initializeScenario() {
     // Implement point 3: Simple parametric model curve - Lissajous Curve
     auto* curve1 = new GMlib::LissajousCurve<float>(); // Use default values (3, 3, 3, 2)
     curve1->toggleDefaultVisualizer();
+    curve1->setColor(GMlib::GMcolor::green());
     curve1->sample(100);
     //this->scene()->insert(curve1);
 
@@ -181,11 +182,12 @@ void Scenario::initializeScenario() {
 
     // Implement point 4: Implement your own version of a Blending Spline Curve
     auto* blendingSpline = new GMlib::BlendSplineCurve<float>(curve1, 8);
-    blendingSpline->translateGlobal({-7.5, 7.5, 0});
+    blendingSpline->translateGlobal({-7.5, 0, 0});
     blendingSpline->toggleDefaultVisualizer();
     blendingSpline->setLineWidth(2);
     blendingSpline->sample(200, 0);
     this->scene()->insert(blendingSpline);
+
 
 
     // Implement point 5:
@@ -200,15 +202,11 @@ void Scenario::initializeScenario() {
 
 
 
-void Scenario::cleanupScenario() {
-
-}
-
+void Scenario::cleanupScenario() {}
 
 
 
 void Scenario::callDefferedGL() {
-
     GMlib::Array< const GMlib::SceneObject*> e_obj;
     this->scene()->getEditedObjects(e_obj);
 
