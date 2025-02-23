@@ -71,11 +71,11 @@ inline
 
     GMlib::DMatrix<T> AT = A;
     AT.transpose();
-    GMlib::DMatrix<T> B = AT * B;
-    GMlib::DVector<Vector<T,3>> q = AT * p;
+    GMlib::DMatrix<T> B = AT * A;
+    GMlib::DVector<Vector<T,3>> y = AT * p;
     B.invert();
 
-    _c = B * q;
+    _c = B * y;
 }
 
 
