@@ -23,7 +23,7 @@ public:
     // Public local functions
     int                 findI(T t) const;
     T                   blend(T w) const;
-    T                   W(int d, int i, T t) const;
+    T                   getW(int d, int i, T t) const;
     Vector<T, 1>        B(int i, T t) const;
     void                generateKnots(T min, T max);
     void                insertLocal(PCurve<T, 3>* c);
@@ -176,7 +176,7 @@ inline
 
 template <typename T>
 inline
-    T BlendSplineCurve<T>::W(int d, int i, T t) const {
+    T BlendSplineCurve<T>::getW(int d, int i, T t) const {
     return (t - _t[i]) / (_t[i+d] - _t[i]);
 }
 
@@ -185,7 +185,7 @@ inline
 template <typename T>
 inline
     Vector<T, 1> BlendSplineCurve<T>::B(int i, T t) const {
-    return {1 - blend(W(1, i, t))};
+    return {1 - blend(getW(1, i, t))};
 }
 
 
