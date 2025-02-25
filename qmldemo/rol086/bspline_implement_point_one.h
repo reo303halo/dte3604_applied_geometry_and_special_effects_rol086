@@ -164,9 +164,9 @@ int BSpline<T>::findI(T t) const {
 
 // Computes the blending weight for recursive basis function evaluation
 template <typename T>
-T BSpline<T>::getW(int d, int i, T t) const {
-    auto w = (t - _t[i]) / (_t[i + d] - _t[i]);
-    return w;
+inline
+    T BSpline<T>::getW(int d, int i, T t) const {
+    return (t - _t[i]) / (_t[i+d] - _t[i]);
 }
 
 
