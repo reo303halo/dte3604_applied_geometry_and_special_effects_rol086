@@ -25,7 +25,7 @@ public:
     T                   blend(T w) const;
     T                   getW(int d, int i, T t) const;
     Vector<T, 1>        B(int i, T t) const;
-    void                generateKnots(T min, T max);
+    void                makeKnots(T min, T max);
     void                insertLocal(PCurve<T, 3>* c);
 
     // Implement point 5: Use affine transformations of local curves to make a dynamic visual special effect.
@@ -63,7 +63,7 @@ inline
     if (isClosed())
         _n++;
 
-    generateKnots(g->getParStart(), g->getParEnd());
+    makeKnots(g->getParStart(), g->getParEnd());
 
     _c.setDim(_n);
     for (int i = 0; i < n; i++) {
@@ -189,7 +189,7 @@ inline
 // If closed then loop back to start (first and last knots are the same).
 template <typename T>
 inline
-    void BlendSplineCurve<T>::generateKnots(T min, T max) {
+    void BlendSplineCurve<T>::makeKnots(T min, T max) {
     for (int i = 0; i < _k; i++)
         _t.push_back(min); // Extend start
 
