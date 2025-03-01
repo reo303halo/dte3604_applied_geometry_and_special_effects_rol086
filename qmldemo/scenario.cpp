@@ -6,12 +6,14 @@
 #include "rol086/bspline_implement_point_one.h"
 #include "rol086/closed_subdivision_curve_implement_point_two.h"
 #include "rol086/blending_spline_curve_implement_point_four.h"
+#include "rol086/blending_spline_surface_implement_point_six.h"
 
 
 // hidmanager
 //#include "hidmanager/defaulthidmanager.h"
 
 // gmlib
+#include <parametrics/surfaces/gmpplane.h>
 #include <scene/light/gmpointlight.h>
 #include <scene/sceneobjects/gmpathtrack.h>
 #include <scene/sceneobjects/gmpathtrackarrows.h>
@@ -69,20 +71,20 @@ void Scenario::initializeScenario() {
    ***************************************************************************/
 
     /*
-  GMlib::Material mm(GMlib::GMmaterial::polishedBronze());
-  mm.set(45.0);
+    GMlib::Material mm(GMlib::GMmaterial::polishedBronze());
+    mm.set(45.0);
 
-  auto ptom = new TestTorus(1.0f, 0.4f, 0.6f);
-  ptom->toggleDefaultVisualizer();
-  ptom->sample(60,60,1,1);
-  this->scene()->insert(ptom);
-  auto ptrack = new GMlib::PathTrack();
-  ptrack->setLineWidth(2);
-  ptom->insert(ptrack);
-  auto ptrack2 = new GMlib::PathTrackArrows();
-  ptrack2->setArrowLength(2);
-  ptom->insert(ptrack2);
-  */
+    auto ptom = new TestTorus(1.0f, 0.4f, 0.6f);
+    ptom->toggleDefaultVisualizer();
+    ptom->sample(60,60,1,1);
+    this->scene()->insert(ptom);
+    auto ptrack = new GMlib::PathTrack();
+    ptrack->setLineWidth(2);
+    ptom->insert(ptrack);
+    auto ptrack2 = new GMlib::PathTrackArrows();
+    ptrack2->setArrowLength(2);
+    ptom->insert(ptrack2);
+    */
 
 
     /**************************************************************************
@@ -90,6 +92,17 @@ void Scenario::initializeScenario() {
     * Class Tasks Week 1, implemention point 1, 2 and 3                       *
     * -Roy E Olsen                                                            *
     **************************************************************************/
+
+
+
+    // Plotting
+    bool implement_point_1_a = true; // BSpline Constructor 1
+    bool implement_point_1_b = false; // BSpline Constructor 2: Least Square
+    bool implement_point_2 = false; // Closed Subdivision Curve: Lane Riesenfeld
+    bool implement_point_3 = false; // Model Curve: Lissajous Curve
+    bool implement_point_4 = false; // Blending Spline Curve
+    bool implement_point_5 = false; // Blending Spline Curve with transformation and rotation
+    bool implement_point_6 = false; // Blending Surface
 
 
 
@@ -113,13 +126,18 @@ void Scenario::initializeScenario() {
     curve1->toggleDefaultVisualizer();
     curve1->setColor(GMlib::GMcolor::green());
     curve1->sample(100);
-    //this->scene()->insert(curve1);
 
-    auto* curve2 = new GMlib::LissajousCurve<float>(8, 3, 3, 2);
+    // By changing parameter "a" from value 3 to 7 we see that the curve stretches on x-axis
+    auto* curve2 = new GMlib::LissajousCurve<float>(7, 3, 3, 2);
     curve2->toggleDefaultVisualizer();
     curve2->setColor(GMlib::GMcolor::blue());
     curve2->sample(100);
-    //this->scene()->insert(curve2);
+    curve2->translateGlobal({10.5, 0, 0});
+
+    if (implement_point_3 == true) {
+        this->scene()->insert(curve1);
+        this->scene()->insert(curve2);
+    }
 
 
 
@@ -127,7 +145,9 @@ void Scenario::initializeScenario() {
     auto bspline1 = new GMlib::BSpline<float>(c_points);
     bspline1-> toggleDefaultVisualizer();
     bspline1-> sample(100,0);
-    //this->scene()-> insert(bspline1);
+    if (implement_point_1_a == true) {
+        this->scene()-> insert(bspline1);
+    }
     bspline1->setLineWidth(5);
 
     for (int i = 0; i < 9; i++)
@@ -136,13 +156,16 @@ void Scenario::initializeScenario() {
         line-> toggleDefaultVisualizer();
         line->setColor(GMlib::GMcolor::blue());
         line-> sample(3,0);
-        //this->scene()-> insert(line);
 
         auto* sphere = new GMlib::PSphere<float>(0.05f);
         sphere->toggleDefaultVisualizer();
         sphere->sample(8, 8, 1, 1);
         sphere->translate(c_points[i]);
-        //this->scene()->insert(sphere);
+
+        if (implement_point_1_a) {
+            this->scene()-> insert(line);
+            this->scene()->insert(sphere);
+        }
     }
 
 
@@ -159,17 +182,38 @@ void Scenario::initializeScenario() {
     BSplineLeastSquare->setColor(GMlib::GMcolor::green());
     BSplineLeastSquare->sample(60);
     BSplineLeastSquare->setLineWidth(3);
-    //this->scene()->insert(BSplineLeastSquare);
+
+    if (implement_point_1_b) {
+        this->scene()->insert(BSplineLeastSquare);
+    }
 
 
 
     // Implement point 2: Closed Subdivision Curve by using Lane-Riesenfeld algorithm
+    // Second degree
     auto* subdiv = new GMlib::LaneRiesenfeldCurve<float>(c_points, 2);
     subdiv->toggleDefaultVisualizer();
     subdiv->sample(10, 2);
-    //this->scene()->insert(subdiv);
-    subdiv->translateGlobal({0, 7.5, 0});
 
+    // Third degree
+    auto* subdiv_third_degree = new GMlib::LaneRiesenfeldCurve<float>(c_points, 2);
+    subdiv_third_degree->toggleDefaultVisualizer();
+    subdiv_third_degree->sample(10, 3);
+
+    // Fourth degree
+    auto* subdiv_forth_degree = new GMlib::LaneRiesenfeldCurve<float>(c_points, 2);
+    subdiv_forth_degree->toggleDefaultVisualizer();
+    subdiv_forth_degree->sample(10, 4);
+
+    if (implement_point_2) {
+        this->scene()->insert(subdiv);
+        this->scene()->insert(subdiv_third_degree);
+        this->scene()->insert(subdiv_forth_degree);
+    }
+
+    subdiv->translateGlobal({0, 7.5, 0});
+    subdiv_third_degree->translateGlobal({10, 7.5, 0});
+    subdiv_forth_degree->translateGlobal({20, 7.5, 0});
 
 
     /**************************************************************************
@@ -186,7 +230,10 @@ void Scenario::initializeScenario() {
     blendingSpline->toggleDefaultVisualizer();
     blendingSpline->setLineWidth(2);
     blendingSpline->sample(200, 0);
-    this->scene()->insert(blendingSpline);
+
+    if (implement_point_4) {
+        this->scene()->insert(blendingSpline);
+    }
 
 
 
@@ -195,9 +242,28 @@ void Scenario::initializeScenario() {
     blendingSplineWithAnimation->toggleDefaultVisualizer();
     blendingSplineWithAnimation->setLineWidth(2);
     blendingSplineWithAnimation->sample(200, 0);
-    this->scene()->insert(blendingSplineWithAnimation);
+
+    if (implement_point_5) {
+        this->scene()->insert(blendingSplineWithAnimation);
+    }
 
 
+    // Implement point 6:
+    GMlib::Point<float, 3> p(1, 0, 0);
+    GMlib::Vector<float, 3> u(0, 5, 0);
+    GMlib::Vector<float, 3> v(0, 0, 5);
+
+    //Draw blending plane
+    GMlib::PSurf<float, 3>* plane = new GMlib::PPlane<float>(p, u, v);
+    auto* plane_surf = new GMlib::MyBlendingSurf<float>(plane, 3, 3);
+    plane_surf->translateGlobal({2.5, -10, 0});
+    plane_surf->rotateGlobal(-M_PI/2, {0, 1, 0});
+    plane_surf->toggleDefaultVisualizer();
+    plane_surf->sample(20, 20, 2, 2);
+
+    if (implement_point_6) {
+        this->scene()->insert(plane_surf);
+    }
 }
 
 

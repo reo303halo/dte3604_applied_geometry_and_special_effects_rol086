@@ -38,7 +38,7 @@ protected:
     T                   getEndP()   const override;
 
     // Protected data for the curve
-    int                   _d, _k, _n; // Degree of blending function (always 1 - constructor), number of control points per segment (d+1), number of subcurves
+    int                   _d, _k, _n; // Where n is number of subcurves
     std::vector<T>        _t; // Knot vector storing parameter values
     DVector<PCurve<T,3>*> _c; // Vector of subcurves
     bool                  _closed, _animate;
@@ -106,14 +106,11 @@ template <typename T>
 void BlendSplineCurve<T>::eval( T t, int d, bool /*l*/ ) const {
     this->_p.setDim( d + 1 );
 
-
-    if(t > _t[_n]){ // Handling speecial case -if t exceeds the last knot value _t[_n], it blends the last two subcurves using the blending function B(i, t).
+    if (t > _t[_n]) { // Handling speecial case -if t exceeds the last knot value _t[_n], it blends the last two subcurves using the blending function B(i, t).
         Vector<T, 1> B_t = B(_n, t);
-
         DVector<Vector<T, 3>> c0 = _c[_n - 1]->evaluateParent(t, d);
 
-        if(std::abs(t - _t[_n]) < 1e-5) {this->_p = c0; return;}
-
+        if (std::abs(t - _t[_n]) < 1e-5) { this->_p = c0; return; }
         DVector<Vector<T, 3>> c1 = _c[0]->evaluateParent(t, d);
 
         this->_p = c1 + (c0 - c1) * B_t[0];
@@ -121,11 +118,9 @@ void BlendSplineCurve<T>::eval( T t, int d, bool /*l*/ ) const {
     } else { // Normal case: Finding i and Blending
         int i = findI(t);
         Vector<T, 1> B_t = B(i, t);
-
         DVector<Vector<T, 3>> c0 = _c[i - 1]->evaluateParent(t, d);
 
-        if(std::abs(t - _t[i]) < 1e-5) {this->_p = c0; return;}
-
+        if (std::abs(t - _t[i]) < 1e-5) { this->_p = c0; return; }
         DVector<Vector<T, 3>> c1 = _c[i]->evaluateParent(t, d);
 
         this->_p = c1 + (c0 - c1) * B_t[0];
@@ -151,11 +146,11 @@ T BlendSplineCurve<T>::getEndP() const {
 template <typename T>
 inline
     int BlendSplineCurve<T>::findI(T t) const {
-    if(t == _t[_n])
+    if (t == _t[_n])
         return _n - 1;
 
-    for(int i = _d; i < _n; i++){
-        if(t < _t[i + 1])
+    for (int i = _d; i < _n; i++) {
+        if (t < _t[i + 1])
             return i;
     }
 }
