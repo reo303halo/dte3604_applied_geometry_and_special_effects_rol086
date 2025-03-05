@@ -100,8 +100,8 @@ void Scenario::initializeScenario() {
     bool implement_point_1_b = false; // BSpline Constructor 2: Least Square
     bool implement_point_2 = false; // Closed Subdivision Curve: Lane Riesenfeld
     bool implement_point_3 = false; // Model Curve: Lissajous Curve
-    bool implement_point_4 = true; // Blending Spline Curve
-    bool implement_point_5 = false; // Blending Spline Curve with transformation and rotation
+    bool implement_point_4 = false; // Blending Spline Curve
+    bool implement_point_5 = true; // Blending Spline Curve with transformation and rotation
     bool implement_point_6 = false; // Blending Surface
 
 
@@ -171,13 +171,14 @@ void Scenario::initializeScenario() {
 
 
     // Implement point 1: BSpline with Least Square
+    int number_of_points = 50;
     GMlib::DVector<GMlib::Vector<float,3>> P(50);
     auto circle = new GMlib::PCircle<float>(10);
     for (int i = 0; i < 50; i++) {
         P[i] = circle->getPosition(circle->getParStart() + i * circle->getParDelta() / 49);
     }
 
-    auto BSplineLeastSquare = new GMlib::BSpline<float> (P, 7);
+    auto BSplineLeastSquare = new GMlib::BSpline<float> (P, 3);
     BSplineLeastSquare->toggleDefaultVisualizer();
     BSplineLeastSquare->setColor(GMlib::GMcolor::green());
     BSplineLeastSquare->sample(60);

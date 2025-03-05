@@ -248,9 +248,6 @@ void BlendSplineCurve<T>::localSimulate(double dt) {
     if (_animate) {
         double speed = 0.2;
 
-        double min_dist = std::numeric_limits<double>::max();
-        double max_dist = std::numeric_limits<double>::lowest();
-
         double minimum_distance = 1.0;
         double maximum_distance = 5.0;
 
@@ -259,9 +256,6 @@ void BlendSplineCurve<T>::localSimulate(double dt) {
             Vector<T, 3> vec_to_center = this->getPos() - n->getPos();
 
             double dist = vec_to_center.getLength();
-            min_dist = std::min(min_dist, dist);
-            max_dist = std::max(max_dist, dist);
-
             vec_to_center = vec_to_center.normalize();
 
             // Calculate movement factor for smooth transition
