@@ -236,14 +236,6 @@ inline
     vec[1] = (left[0] * mat[0][1] + left[1] * mat[1][1]) * right[1];
 
     this->_p = vec[0] + vec[1];
-
-
-    //    if(std::abs(u - _u[_n]) < 1e-5) {this->_p = {0}; return;}
-
-    //    DVector<Vector<T, 3>> c1 = _c[0]->evaluateParent(t, d);
-
-    //    this->_p = c1 + (c0 - c1)*B_t[0];
-
 }
 
 template <typename T>
@@ -251,11 +243,7 @@ void MyBlendingSurf<T>::localSimulate(double dt) {
     this->sample(20, 30, 1, 1);
     this->setEditDone();
 }
-
 } // END namespace GMlib
-
-
-
 
 
 #endif // BLENDING_SPLINE_SURFACE_IMPLEMENT_POINT_SIX_H

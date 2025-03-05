@@ -272,10 +272,13 @@ void BlendSplineCurve<T>::localSimulate(double dt) {
             rotateControlCurveAlongCenter(i, M_2PI * dt * speed);
             translateControlCurve(i, vec_to_center * movement_factor * dt * speed);
         }
-
         this->resample();
-        this->setEditDone();
     }
+    else {
+        this->sample(100, 0);
+    }
+
+    this->setEditDone();
 }
 
 
